@@ -1,0 +1,43 @@
+---
+- name: install mariadb
+  yum: name="{{ item }}" state="present"
+  with_items: [ mariadb-server, mariadb, mariadb-libs , MySQL-python ]
+
+- name: configure mariadb
+  ini_file: dest="/etc/my.cnf.d/server.cnf" option="{{ item.option }}"
+    value="{{ item.value }}" section="{{ item.section }}"
+  with_items: "{{ database_config_server }}"
+  notify: restart db server
+
+- name: set system max open files descriptors
+  ini_file: dest="/etc/systemd/system/mariadb.service.d/limits.conf"
+    option="LimitNOFILE" value="65535" section="[Service]"
+    create="yes" state="present" mode="0440"
+
+- name: enable and start mariadb
+  service: name="mariadb" state="started" enabled="yes"
+
+- name: set mariadb root password
+  mysql_user: name="root" password="{{ database_root_password }}"
+    host="localhost" state="present" update_password="always"
+
+- name: Allow passwordless connection for `root` user
+  ini_file: dest="/root/.my.cnf" option="{{ item.option }}"
+    value="{{ item.value }}" section="client"
+    create="yes" state="present" mode="0400"
+  with_items:
+    - { option: "user", value: "root" }
+    - { option: "password", value: "{{ database_root_password }}" }
+  notify: restart mariadb
+
+- name: remove remote root access
+  command: mysql -e "DELETE FROM mysql.user WHERE Host NOT in ('localhost','127.0.0.1') AND User='root'"
+
+- name: create databases
+  mysql_db: name="{{ item }}" state="present"
+  with_items: "{{ database_databases }}"
+
+- name: create mariadb users
+  mysql_user: name="{{ item.user }}" password="{{ item.password }}"
+    host="{{ item.host }}" priv="{{ item.priv }}" state="present"
+  with_items: "{{ database_users }}"
