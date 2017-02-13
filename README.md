@@ -22,7 +22,7 @@ database_config_server:
   - ...
 
 database_users: []
-  - { user: "myuser" , password: "s3cr3t" , host: "localhost" , priv: "myuser.*:ALL,GRANT" }
+  - { user: "myuser" , password: "s3cr3t" , host: "localhost" , priv: "myuser.*:ALL" }
 ```
 
 Dependencies
