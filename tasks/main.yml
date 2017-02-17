@@ -28,7 +28,7 @@
   with_items:
     - { option: "user", value: "root" }
     - { option: "password", value: "{{ database_root_password }}" }
-  notify: restart mariadb
+  notify: restart mariadb server
 
 - name: remove remote root access
   command: mysql -e "DELETE FROM mysql.user WHERE Host NOT in ('localhost','127.0.0.1') AND User='root'"
