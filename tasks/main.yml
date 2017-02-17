@@ -3,6 +3,12 @@
   yum: name="{{ item }}" state="present"
   with_items: [ mariadb-server, mariadb, mariadb-libs , MySQL-python ]
 
+- name: configure mariadb defaults
+  ini_file: dest="/etc/my.cnf.d/server.cnf" option="{{ item.option }}"
+    value="{{ item.value }}" section="{{ item.section }}"
+  with_items: "{{ database_config_server_defaults }}"
+  notify: restart mariadb server
+
 - name: configure mariadb
   ini_file: dest="/etc/my.cnf.d/server.cnf" option="{{ item.option }}"
     value="{{ item.value }}" section="{{ item.section }}"

@@ -2,7 +2,7 @@
 database_root_password: "root"
 database_databases: []
 database_users: []
-database_config_server:
+database_config_server_defaults:
   - { option: "character-set-server", value: utf8 , section: "mysqld" }
   - { option: "max_allowed_packet", value: 1024M , section: "mysqld" }
   - { option: "slow_query_log", value: "1" , section: "mysqld" }
@@ -36,3 +36,4 @@ database_config_server:
   - { option: "innodb_buffer_pool_instances", value: "4" , section: "mysqld" }
   - { option: "innodb_log_files_in_group", value: "2" , section: "mysqld" }
 
+database_config_server: []
