@@ -6,7 +6,7 @@ database_config_server:
   - { option: "character-set-server", value: utf8 , section: "mysqld" }
   - { option: "max_allowed_packet", value: 1024M , section: "mysqld" }
   - { option: "slow_query_log", value: "1" , section: "mysqld" }
-  - { option: "slow_query_log_file", value: "/var/log/slow-query.log" , section: "mysqld" }
+  - { option: "slow_query_log_file", value: "/var/log/mariadb/slow-query.log" , section: "mysqld" }
   - { option: "net_read_timeout", value: "7200" , section: "mysqld" }
   - { option: "net_write_timeout", value: "7200" , section: "mysqld" }
   - { option: "myisam_sort_buffer_size", value: "64M" , section: "mysqld" }
