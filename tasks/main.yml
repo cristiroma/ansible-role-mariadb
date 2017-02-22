@@ -9,22 +9,20 @@
   with_items: "{{ database_config_server_defaults }}"
   notify: restart mariadb server
 
-- name: increase the global number of file descriptors
-  lineinfile: dest="/etc/sysctl.conf" line="fs.file-max = 65535" state="present"
-
-- name: configure mariadb file descriptors and processes limits
-  copy: src="files/90-mariadb.conf" dest="/etc/security/limits.d/90-mariadb.conf" owner="root" group="root"
-
 - name: configure mariadb
   ini_file: dest="/etc/my.cnf.d/server.cnf" option="{{ item.option }}"
     value="{{ item.value }}" section="{{ item.section }}"
   with_items: "{{ database_config_server }}"
   notify: restart mariadb server
 
-- name: set system max open files descriptors
-  ini_file: dest="/etc/systemd/system/mariadb.service.d/limits.conf"
-    option="LimitNOFILE" value="65535" section="[Service]"
-    create="yes" state="present" mode="0440"
+- name: set MariaDB LimitNPROC limits
+  lineinfile: dest="/usr/lib/systemd/system/mariadb.service" line="LimitNPROC=65535" state="present" insertafter="^\[Service\]"
+
+- name: set MariaDB LimitNOFILE descriptors
+  lineinfile: dest="/usr/lib/systemd/system/mariadb.service" line="LimitNOFILE=65535" state="present" insertafter="^\[Service\]"
+
+- name: reload daemon
+  command: systemctl daemon-reload
 
 - name: enable and start mariadb
   service: name="mariadb" state="started" enabled="yes"
