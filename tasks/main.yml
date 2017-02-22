@@ -9,6 +9,12 @@
   with_items: "{{ database_config_server_defaults }}"
   notify: restart mariadb server
 
+- name: increase the global number of file descriptors
+  lineinfile: dest="/etc/sysctl.conf" line="fs.file-max = 65535" state="present"
+
+- name: configure mariadb file descriptors and processes limits
+  copy: src="files/90-mariadb.conf" dest="/etc/security/limits.d/90-mariadb.conf" owner="root" group="root"
+
 - name: configure mariadb
   ini_file: dest="/etc/my.cnf.d/server.cnf" option="{{ item.option }}"
     value="{{ item.value }}" section="{{ item.section }}"
